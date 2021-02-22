@@ -53,14 +53,17 @@ int met_aster(void)
 
 int met_paren(void)
 {
-	if (param_depth == 0)
-		return (met_just_paren());
-	if (token_type == '*'
+	if (param_depth == 0
+		|| token_type =='*'
 		|| token_type == '('
-		|| (token_type == IDEN && !istype(token)))
-		return (met_just_paren());
-	else
-		return (met_func_paren());
+		|| (token_type == IDEN && !istype(token))) {
+		if (!just_paren())
+			return (0);
+	} else {
+		if (!func_paren())
+			return (0);
+	}
+	return (check_funcs_and_arrs());
 }
 
 int met_iden(void)
@@ -75,7 +78,7 @@ int met_iden(void)
 	return (check_funcs_and_arrs());
 }
 
-int met_func_paren(void)
+int func_paren(void)
 {
 	param_depth++;
 	if (!istype(token))
@@ -84,7 +87,7 @@ int met_func_paren(void)
 		if (!type_dcl())
 			return (0);
 		if (token_type != ',')
-			break ;
+			goto after_valid_params;
 		get_token();
 	}
 after_valid_params:
@@ -95,10 +98,10 @@ after_valid_params:
 	param_depth--;
 	strcat(out, param_depth ? "" : "function returning ");
 	get_token();
-	return (check_funcs_and_arrs());
+	return (1);
 }
 
-int met_just_paren(void)
+int just_paren(void)
 {
 	if (!dcl())
 		return (0);
@@ -107,7 +110,7 @@ int met_just_paren(void)
 		return (0);
 	}
 	get_token();
-	return (check_funcs_and_arrs());
+	return (1);
 }
 
 int check_funcs_and_arrs(void)
@@ -115,18 +118,18 @@ int check_funcs_and_arrs(void)
 	while (1) {
 		if (token_type == '(') {
 			get_token();
-			if (!met_func_paren())
+			if (!func_paren())
 				return (0);
 		} else if (token_type == '[') {
 			get_token();
-			if (!met_bracket())
+			if (!bracket())
 				return (0);
 		} else
 			return (1);
 	}
 }
 
-int met_bracket(void)
+int bracket(void)
 {
 	if (token_type != CONST) {
 		printf("constant needed instead of '%s'\n", token);
