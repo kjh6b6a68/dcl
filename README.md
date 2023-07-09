@@ -5,7 +5,7 @@ I made this program to get a better understanding of recursive descent parser.
 
 #### Difference between my program and the program from the book
 * The program from the book only parses declarations in which no function has parameters, but my program can parse those that have them.
-* The program from the book uses `ungetch()` function, but I felt that is not needed and dirty so I didn't use it.
+* The program from the book uses `ungetch()` function, but I felt it is not needed and dirty so I didn't use it.
 * My program has more elaborated error messages.
 
 #### How to execute
